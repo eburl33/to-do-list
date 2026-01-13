@@ -1,0 +1,24 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: react_mvp
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - .data:/docker-entrypoint-initdb.d.d
+    ports:
+      - "5432:5432"
+  backend:
+    build: .
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgres@postgres_db:5432/react_mvp"
+
+
+volumes:
+  postgres_data:
+    external: false
