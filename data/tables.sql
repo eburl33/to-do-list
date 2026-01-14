@@ -1,15 +1,17 @@
-CREATE TABLE to_do_lists (
+CREATE TABLE IF NOT EXISTS to_do_lists (
     to_do_list_id SERIAL PRIMARY KEY,
     date_added DATE DEFAULT CURRENT_DATE
 );
 
-CREATE TABLE items (
+CREATE TABLE IF NOT EXISTS items (
     item_id SERIAL PRIMARY KEY,
     to_do_list_id INT NOT NULL REFERENCES to_do_lists(to_do_list_id),
     description VARCHAR(250),
     is_complete BOOLEAN DEFAULT FALSE
 );
 
+INSERT INTO to_do_lists DEFAULT VALUES;
+INSERT INTO to_do_lists DEFAULT VALUES;
 INSERT INTO to_do_lists DEFAULT VALUES;
 
 INSERT INTO items (to_do_list_id, description, is_complete) VALUES

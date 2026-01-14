@@ -64,3 +64,16 @@ li{
   font-size: 1.4rem;
   margin-left: 10px;
 }
+
+.tag {
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  background: transparent;
+}
+
+.tag-active {
+  border-color: #111;
+  font-weight: 600;
+}
