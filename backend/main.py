@@ -8,9 +8,11 @@ from schema import (
     ItemUpdate,
     ListOut,
     ListRename,
+    ListCreate,
 )
 from db import (
     add_item,
+    create_list,
     delete_item,
     get_lists,
     get_items,
@@ -44,6 +46,12 @@ def endpoint_get_items(to_do_list_id: int, include_completed: bool = Query(False
 async def endpoint_new(to_do_list_id: int, item_in: ItemCreate) -> ItemOut:
     item = add_item(to_do_list_id=to_do_list_id, item_in=item_in)
     return item
+
+
+@app.post("/api/lists")
+def create_list_endpoint(payload: ListCreate):
+    list = create_list(payload)
+    return list
 
 
 @app.get("/api/lists/{to_do_list_id}/items/{item_id}")

@@ -11,6 +11,7 @@ from schema import (
     ItemCreate,
     ItemUpdate,
     ListOut,
+    ListCreate,
     ListRename,
 )
 
@@ -85,9 +86,9 @@ def get_items_for_list(to_do_list_id: int) -> list[ItemOut]:
     ]
 
 
-def create_list():
+def create_list(payload: ListCreate) -> ListOut:
     with SessionLocal() as db:
-        new_list = ToDoList()
+        new_list = ToDoList(name=payload.name)
         db.add(new_list)
         db.commit()
         db.refresh(new_list)

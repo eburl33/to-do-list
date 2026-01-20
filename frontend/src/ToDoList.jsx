@@ -64,15 +64,19 @@ useEffect(() => {
 
     async function createNewList() {
         const name = prompt("list name?")
-        if (!name) return
+        if (!name || !name.trim()) return
 
         try {
-            const response = await fetch(`/api/lists`, {method: "POST"})
+            const response = await fetch(`/api/lists`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: name.trim() })
+                })
             if (!response.ok) {
                 throw new Error ("Failed to create list")
             }
             const newList = await response.json()
-            setLists(lists => [...lists, newList])
+            setLists((prev) => [...prev, newList])
             setActiveListId(newList.to_do_list_id)
         } catch (error) {
             console.error(error);
@@ -146,16 +150,23 @@ useEffect(() => {
     }
 
     async function toggleComplete(item) {
+        const itemId = item.item_id
         const nextIsComplete = !item.is_complete
 
         setItems(items =>
             items.map(i =>
-                i.item_id === item.item_id ? { ...i, is_complete: nextIsComplete } : i
+                i.item_id === itemId ? { ...i, is_complete: nextIsComplete } : i
             )
         )
-
+        if (!nextIsComplete) {
+        const existing = removeTimersRef.current.get(itemId)
+            if (existing) {
+                clearTimeout(existing)
+                removeTimersRef.current.delete(itemId)
+            }
+        }
         try {
-            const response = await fetch(`/api/lists/${activeListId}/items/${item.item_id}`, {
+            const response = await fetch(`/api/lists/${activeListId}/items/${itemId}`, {
                 method: "PUT",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({
@@ -169,30 +180,32 @@ useEffect(() => {
             }
             const updatedItem = await response.json()
             setItems(items =>
-                items.map(i => (i.item_id === updatedItem.item_id ? updatedItem : i))
+                items.map(i => (i.item_id === itemId ? updatedItem : i))
             )
-            const existing = removeTimersRef.current.get(updatedItem.item_id)
-            if (existing) {
-                clearTimeout(existing)
-                removeTimersRef.current.delete(updatedItem.item_id)
-            }
 
             if (updatedItem.is_complete && !showCompleted) {
+                const existing = removeTimersRef.current.get(itemId)
+                if (existing) clearTimeout(existing)
                 const timerId = setTimeout(() => {
-                    setItems(items => items.filter(i => i.item_id !== updatedItem.item_id))
-                    removeTimersRef.current.delete(updatedItem.item_id)
+                    setItems(items => items.filter(i => i.item_id !== itemId))
+                    removeTimersRef.current.delete(itemId)
                 }, 5000)
-                removeTimersRef.current.set(updatedItem.item_id, timerId)
+                removeTimersRef.current.set(itemId, timerId)
             }
         } catch (error) {
             console.error(error)
             setItems(items =>
                 items.map(i =>
-                    i.item_id === item.item_id ? { ...i, is_complete: item.is_complete } : i
+                    i.item_id === itemId ? { ...i, is_complete: item.is_complete } : i
                 )
             )
 
         }
+    }
+
+    function handleSubmit(e) {
+        e.preventDefault()
+        addItem()
     }
 
     function moveItemUp(itemId){
@@ -237,23 +250,25 @@ return (
                         </option>
                     ))}
                 </select>
-                <button onClick={createNewList}>New List</button>
-                <button onClick={renameActiveList}>Rename</button>
+                <button className="new-list" onClick={createNewList}>New List</button>
+                <button className="rename"onClick={renameActiveList}>Rename</button>
             </div>
-            <input
+            <form onSubmit={handleSubmit}>
+                <input
                 type="text"
                 placeholder="Enter an Item..."
                 value={newItem}
-                onChange={handleInputChange} />
-            <button
-                className="add-button"
-                onClick={addItem} >
-                Add Item
-            </button>
+                onChange={handleInputChange}
+                />
+                <button type="submit"
+                    className="add-button">
+                    Add Item
+                </button>
+            </form>
         </div>
         <ol>
             {items.map((item, index) =>
-                <li key={item.item_id}>
+                <li key={item.item_id} className={item.is_complete ? "completed" : ""}>
                     <input type="checkbox"
                     checked={!!item.is_complete}
                     onChange={() => toggleComplete(item)}

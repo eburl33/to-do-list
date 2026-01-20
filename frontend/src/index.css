@@ -17,22 +17,22 @@ button{
   transition: backgroud-color 0.5s ease;
 }
 .add-button{
-  background-color: greenyellow;
+  background-color: rgb(136, 191, 52);
 }
 .add-button:hover{
-  background-color: rgb(206, 255, 47);
+  background-color:  rgb(151, 210, 63);
 }
 .delete-button{
-  background-color: red;
+  background-color: rgb(200, 72, 72);
 }
 .delete-button:hover{
-  background-color: rgb(255, 85, 0);
+  background-color: rgb(216, 46, 46);
 }
 .move-button{
-  background-color: blue;
+  background-color: rgb(41, 130, 186);
 }
 .move-button:hover{
-  background-color: rgb(0, 94, 255)
+  background-color: rgb(0, 132, 255)
   ;
 }
 input[type="text"]{
@@ -66,14 +66,40 @@ li{
 }
 
 .tag {
-  border: 1px solid #ccc;
+  border: 1px solid #000000;
   padding: 6px 10px;
   border-radius: 999px;
   cursor: pointer;
   background: transparent;
 }
 
+.tag:hover {
+  background-color: #adacac;
+}
+
+
 .tag-active {
   border-color: #111;
   font-weight: 600;
+}
+
+.completed .text {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.new-list {
+  background-color: rgb(228, 153, 13);
+}
+
+.new-list:hover {
+  background-color: rgb(249, 165, 9);
+}
+
+.rename {
+  background-color: darksalmon;
+}
+
+.rename:hover {
+   background-color:  rgb(242, 168, 144);
 }
